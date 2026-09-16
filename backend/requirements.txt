@@ -1,0 +1,3 @@
+fastapi
+uvicorn[standard]
+watchfiles<=0.21.0
