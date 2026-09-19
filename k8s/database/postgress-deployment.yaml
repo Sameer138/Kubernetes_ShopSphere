@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shop-deploy
+  name: pg-deploy
   namespace: shop
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: shop-app
@@ -44,22 +44,41 @@ spec:
                 secretKeyRef:
                   name: shop-secret
                   key: POSTGRES_PASSWORD
-          readinessProbe:
-            exec:
-              command:
-                - sh
-                - c
-                - pg_isready -U taskuser
-            initialDelaySeconds: 10
-            periodSeconds: 5
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - sh
+          #       - -c
+          #       - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - sh
+          #       - -c
+          #       - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
           livenessProbe:
             exec:
               command:
-                - sh
-                - c
-                - pg_islive -U taskuser
-            initialDelaySeconds: 30
+              - sh
+              - -c
+              - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            initialDelaySeconds: 60   # Increased from 30s
             periodSeconds: 10
+            failureThreshold: 6       # Gives extra safety buffer
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+            initialDelaySeconds: 30   # Increased from 10s
+            periodSeconds: 10         # Increased from 5s
+            failureThreshold: 6
+
       volumes:
         - name: shop-mount
           persistentVolumeClaim:

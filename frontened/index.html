@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>ShopSphere</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f7fa;
+        color: #1f2937;
+    }
+
+    header {
+        background: #111827;
+        color: white;
+        padding: 20px 40px;
+    }
+
+    header h1 {
+        margin: 0;
+    }
+
+    header p {
+        margin: 5px 0 0;
+        color: #d1d5db;
+    }
+
+    main {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .status {
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        background: #e5e7eb;
+    }
+
+    .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .product {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .product h3 {
+        margin-top: 0;
+    }
+
+    .price {
+        font-size: 20px;
+        font-weight: bold;
+        margin: 15px 0;
+    }
+
+    button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    #message {
+        margin-top: 25px;
+        padding: 15px;
+        border-radius: 6px;
+        background: #dcfce7;
+        display: none;
+    }
+</style>
+
+</head>
+
+<body>
+
+<header> <h1>ShopSphere</h1> <p>Enterprise Order Management Platform</p> </header>
+
+<main>
+
+<div id="status" class="status">
+    Loading products...
+</div>
+
+<section>
+    <h2>Products</h2>
+
+    <div id="products" class="products">
+    </div>
+</section>
+
+<div id="message"></div>
+
+</main>
+
+<script> async function loadProducts() { const status = document.getElementById("status"); const productsContainer = document.getElementById("products"); try { const response = await fetch("/api/products"); if (!response.ok) { throw new Error("Failed to fetch products"); } const products = await response.json(); status.innerText = "Products loaded successfully"; productsContainer.innerHTML = ""; products.forEach(product => { const productElement = document.createElement("div"); productElement.className = "product"; productElement.innerHTML = ` <h3>${product.name}</h3> <div class="price"> ₹${product.price.toLocaleString("en-IN")} </div> <button onclick="createOrder(${product.id}, '${product.name}')"> Place Order </button> `; productsContainer.appendChild(productElement); }); } catch (error) { console.error(error); status.innerText = "Unable to load products from Order API"; status.style.background = "#fee2e2"; } } async function createOrder(productId, productName) { const message = document.getElementById("message"); try { const response = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ product_id: productId, product_name: productName, quantity: 1 }) }); if (!response.ok) { throw new Error("Order creation failed"); } const result = await response.json(); message.style.display = "block"; message.innerText = result.message + " | Order time: " + result.timestamp; } catch (error) { console.error(error); message.style.display = "block"; message.style.background = "#fee2e2"; message.innerText = "Unable to create order"; } } loadProducts(); </script>
+
+</body> </html>
