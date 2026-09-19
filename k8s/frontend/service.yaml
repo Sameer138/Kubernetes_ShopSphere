@@ -1,13 +1,32 @@
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: frontend-svc
+#   namespace: shop
+# spec:
+#   selector:
+#     app: front-apps
+#   ports:
+#     - port: 80
+#       targetPort: 80
+#       protocol: TCP
+#   type: ClusterIP
+
 apiVersion: v1
 kind: Service
+
 metadata:
-  name: frontend-svc
-  namespace: shop
+  name: frontend-service
+  namespace: shopsphere
+
 spec:
+
   selector:
-    app: front-apps
+    app: frontend
+
   ports:
+
     - port: 80
       targetPort: 80
-      protocol: TCP
+
   type: ClusterIP

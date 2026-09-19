@@ -1,115 +1,210 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
 
-<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>ShopSphere</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<style>
-    * {
-        box-sizing: border-box;
-    }
+    <title>ShopSphere</title>
 
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f5f7fa;
-        color: #1f2937;
-    }
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    header {
-        background: #111827;
-        color: white;
-        padding: 20px 40px;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
 
-    header h1 {
-        margin: 0;
-    }
+        header {
+            background: #111827;
+            color: white;
+            padding: 20px 40px;
+        }
 
-    header p {
-        margin: 5px 0 0;
-        color: #d1d5db;
-    }
+        header h1 {
+            margin-bottom: 5px;
+        }
 
-    main {
-        max-width: 1100px;
-        margin: 40px auto;
-        padding: 0 20px;
-    }
+        header p {
+            color: #d1d5db;
+        }
 
-    .status {
-        padding: 12px 16px;
-        border-radius: 6px;
-        margin-bottom: 25px;
-        background: #e5e7eb;
-    }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
 
-    .products {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 20px;
-    }
+        .section {
+            margin-bottom: 40px;
+        }
 
-    .product {
-        background: white;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    }
+        .section h2 {
+            margin-bottom: 20px;
+        }
 
-    .product h3 {
-        margin-top: 0;
-    }
+        .products {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
 
-    .price {
-        font-size: 20px;
-        font-weight: bold;
-        margin: 15px 0;
-    }
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+        }
 
-    button {
-        background: #2563eb;
-        color: white;
-        border: none;
-        padding: 10px 16px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+        .product-card h3 {
+            margin-bottom: 10px;
+        }
 
-    button:hover {
-        background: #1d4ed8;
-    }
+        .product-description {
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
 
-    #message {
-        margin-top: 25px;
-        padding: 15px;
-        border-radius: 6px;
-        background: #dcfce7;
-        display: none;
-    }
-</style>
+        .price {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
 
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        th {
+            background: #f3f4f6;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            color: #6b7280;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+    </style>
 </head>
 
 <body>
 
-<header> <h1>ShopSphere</h1> <p>Enterprise Order Management Platform</p> </header>
+<header>
+    <h1>ShopSphere</h1>
+    <p>Kubernetes-powered e-commerce platform</p>
+</header>
 
-<main>
+<div class="container">
 
-<div id="status" class="status">
-    Loading products...
+    <div id="message" class="message"></div>
+
+    <section class="section">
+        <h2>Products</h2>
+
+        <div id="products" class="products">
+            <p class="loading">Loading products...</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Orders</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product ID</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+
+            <tbody id="orders">
+                <tr>
+                    <td colspan="5">
+                        Loading orders...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
 </div>
 
-<section>
-    <h2>Products</h2>
+<footer>
+    ShopSphere &copy; 2026
+</footer>
 
-    <div id="products" class="products">
-    </div>
-</section>
+<script src="/app.js"></script>
 
-<div id="message"></div>
-
-</main>
-
-<script> async function loadProducts() { const status = document.getElementById("status"); const productsContainer = document.getElementById("products"); try { const response = await fetch("/api/products"); if (!response.ok) { throw new Error("Failed to fetch products"); } const products = await response.json(); status.innerText = "Products loaded successfully"; productsContainer.innerHTML = ""; products.forEach(product => { const productElement = document.createElement("div"); productElement.className = "product"; productElement.innerHTML = ` <h3>${product.name}</h3> <div class="price"> ₹${product.price.toLocaleString("en-IN")} </div> <button onclick="createOrder(${product.id}, '${product.name}')"> Place Order </button> `; productsContainer.appendChild(productElement); }); } catch (error) { console.error(error); status.innerText = "Unable to load products from Order API"; status.style.background = "#fee2e2"; } } async function createOrder(productId, productName) { const message = document.getElementById("message"); try { const response = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ product_id: productId, product_name: productName, quantity: 1 }) }); if (!response.ok) { throw new Error("Order creation failed"); } const result = await response.json(); message.style.display = "block"; message.innerText = result.message + " | Order time: " + result.timestamp; } catch (error) { console.error(error); message.style.display = "block"; message.style.background = "#fee2e2"; message.innerText = "Unable to create order"; } } loadProducts(); </script>
-
-</body> </html>
+</body>
+</html>

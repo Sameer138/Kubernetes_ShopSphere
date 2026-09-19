@@ -1,35 +1,87 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis-deploy
+#   namespace: shop
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: reddis-app
+#   template:
+#     metadata:
+#       labels:
+#         app: reddis-app
+#     spec:
+#       containers:
+#         - name: reddis-container
+#           image: redis:7-alpine
+#           ports:
+#             - containerPort: 6379
+#           resources:
+#             requests:
+#               cpu: 50m
+#               memory: 64Mi
+#             limits:
+#               cpu: 200m
+#               memory: 128Mi
+#           readinessProbe:
+#             exec:
+#               command:
+#                 - redis-cli
+#                 - ping
+#             initialDelaySeconds: 5
+#             periodSeconds: 10
+            
+
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
-  name: redis-deploy
-  namespace: shop
+  name: redis
+  namespace: shopsphere
+
 spec:
+
   replicas: 1
+
   selector:
     matchLabels:
-      app: reddis-app
+      app: redis
+
   template:
+
     metadata:
       labels:
-        app: reddis-app
+        app: redis
+
     spec:
+
       containers:
-        - name: reddis-container
+
+        - name: redis
+
           image: redis:7-alpine
+
           ports:
             - containerPort: 6379
-          resources:
-            requests:
-              cpu: 50m
-              memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 128Mi
+
           readinessProbe:
+
             exec:
-              commands:
+              command:
                 - redis-cli
                 - ping
-              initialDelaySeconds: 5
-              periodSeconds: 10
-            
+
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+
+            exec:
+              command:
+                - redis-cli
+                - ping
+
+            initialDelaySeconds: 15
+            periodSeconds: 10

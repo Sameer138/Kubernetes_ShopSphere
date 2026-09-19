@@ -1,14 +1,35 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: shop-config
+#   namespace: shop
+# data:
+#   # Do not pass a block file unless your app explicitly parses .conf files. 
+#   # Instead, pass them as flat key-value pairs which inject directly as Environment Variables.
+#   APP_NAME: "shopshere-order-api"
+#   ENVIRONMENT: "production"
+#   LOG_LEVEL: "INFO"
+#   DATABASE_HOST: "pg-service"  # Changed from 'postgres' to match your actual K8s service name
+#   DATABASE_PORT: "5432"
+#   REDIS_HOST: "redis-service"  # Ensure this matches your Redis service name too!
+#   REDIS_PORT: "6379"           # Fixed typo from REDIS_PORT-6379
+
+
 apiVersion: v1
 kind: ConfigMap
+
 metadata:
-  name: shop-config
-  namespace: shop
+  name: shopsphere-config
+  namespace: shopsphere
+
 data:
-  application.conf: |
-    APP_NAME=shopshere-order-api
-    ENVIRONMENT=production
-    LOG_LEVEL=INFO
-    DATABASE_HOST=postgres
-    DATABASE_PORT=5432
-    REDIS_HOST=redis
-    REDIS_PORT-6379
+
+  DB_HOST: postgres-service
+
+  DB_PORT: "5432"
+
+  DB_NAME: shopsphere
+
+  REDIS_HOST: redis-service
+
+  REDIS_PORT: "6379"

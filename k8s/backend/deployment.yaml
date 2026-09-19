@@ -1,51 +1,184 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: order-api
+#   namespace: shop
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       app: order-api
+#   template:
+#     metadata:
+#       labels:
+#         app: order-api
+#     spec:
+#       containers:
+#         - name: backend-cont
+#           image: shop-backend:v1
+#           ports:
+#             - containerPort: 8000
+#           # ------------------ ADD THIS BLOCK ------------------
+#           envFrom:
+#             - configMapRef:
+#                 name: shop-config
+#           # ----------------------------------------------------
+#           securityContext:
+#             runAsNonRoot: true
+#             runAsUser: 10001
+#             allowPrivilegeEscalation: false
+#           resources:
+#             requests:
+#               cpu: 100m
+#               memory: 128Mi
+#             limits:
+#               cpu: 500m
+#               memory: 512Mi
+#           startupProbe:
+#             httpGet:
+#               path: /health
+#               port: 8000
+#             initialDelaySeconds: 5
+#             failureThreshold: 6
+#             periodSeconds: 5
+#           readinessProbe:
+#             httpGet:
+#               path: /ready
+#               port: 8000
+#             initialDelaySeconds: 5
+#             periodSeconds: 10
+#           livenessProbe:
+#             httpGet:
+#               path: /health
+#               port: 8000
+#             initialDelaySeconds: 5
+#             periodSeconds: 10
+
+
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
-  name: order-api
-  namespace: shop
+  name: backend
+  namespace: shopsphere
+
 spec:
+
   replicas: 2
+
+  strategy:
+
+    type: RollingUpdate
+
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
   selector:
+
     matchLabels:
-      app: order-api
+      app: backend
+
   template:
+
     metadata:
+
       labels:
-        app: order-api
+        app: backend
+
     spec:
+
       containers:
-        - name: backend-cont
-          image: shop:v1
+
+        - name: backend
+
+          image: shop-backend:v1
+
+          imagePullPolicy: IfNotPresent
+
           ports:
+
             - containerPort: 8000
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 10001
-            allowPrivilegeEscalation: false
+
+          env:
+
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: shopsphere-config
+                  key: DB_HOST
+
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: shopsphere-config
+                  key: DB_PORT
+
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: shopsphere-config
+                  key: DB_NAME
+
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: shopsphere-config
+                  key: REDIS_HOST
+
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: shopsphere-config
+                  key: REDIS_PORT
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: shopsphere-secret
+                  key: DB_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shopsphere-secret
+                  key: DB_PASSWORD
+
           resources:
+
             requests:
               cpu: 100m
               memory: 128Mi
+
             limits:
               cpu: 500m
               memory: 512Mi
+
           startupProbe:
+
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 5
-            failureThreshold: 6
+
+            failureThreshold: 30
             periodSeconds: 5
+
           readinessProbe:
+
             httpGet:
               path: /ready
               port: 8000
+
             initialDelaySeconds: 5
-            periodSeconds: 10
+            periodSeconds: 5
+
+            failureThreshold: 3
+
           livenessProbe:
+
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 5
+
+            initialDelaySeconds: 20
             periodSeconds: 10
-        
