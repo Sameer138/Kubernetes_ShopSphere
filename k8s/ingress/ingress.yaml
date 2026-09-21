@@ -21,7 +21,6 @@
 #             name: backend-service # Use 'order-api' if you renamed this service earlier
 #             port:
 #               number: 8000
-
 #       # Route /shop traffic to the frontend UI service
 #       - path: /shop
 #         pathType: Prefix
@@ -30,39 +29,21 @@
 #             name: frontend-svc # Make sure this matches your exact frontend service name
 #             port:
 #               number: 80
-
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-
 metadata:
-
   name: shopsphere-ingress
-
   namespace: shopsphere
-
 spec:
-
   ingressClassName: nginx
-
   rules:
-
     - host: shopsphere.local
-
       http:
-
         paths:
-
           - path: /
-
             pathType: Prefix
-
             backend:
-
               service:
-
                 name: frontend-service
-
                 port:
-
                   number: 80

@@ -11,22 +11,15 @@
 #       targetPort: 6379
 #       name: redis-port
 #   type: ClusterIP 
-
 apiVersion: v1
 kind: Service
-
 metadata:
   name: redis-service
   namespace: shopsphere
-
 spec:
-
   selector:
     app: redis
-
   ports:
-
     - port: 6379
       targetPort: 6379
-
   type: ClusterIP

@@ -11,24 +11,16 @@
 #   persistentVolumeReclaimPolicy: Delete
 #   hostPath:
 #     path: /mnt/data/shop
-
 apiVersion: v1
 kind: PersistentVolume
-
 metadata:
   name: shopsphere-postgres-pv
-
 spec:
-
   capacity:
     storage: 2Gi
-
   accessModes:
     - ReadWriteOnce
-
   persistentVolumeReclaimPolicy: Retain
-
   storageClassName: manual
-
   hostPath:
     path: /data/shopsphere-postgres

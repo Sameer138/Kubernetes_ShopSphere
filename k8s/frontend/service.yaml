@@ -11,22 +11,15 @@
 #       targetPort: 80
 #       protocol: TCP
 #   type: ClusterIP
-
 apiVersion: v1
 kind: Service
-
 metadata:
   name: frontend-service
   namespace: shopsphere
-
 spec:
-
   selector:
     app: frontend
-
   ports:
-
     - port: 80
       targetPort: 80
-
   type: ClusterIP
