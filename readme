@@ -1,0 +1,107 @@
+ShopShere Application
+Github Code: https://github.com/Sameer138/Kubernetes_ShopSphere
+
+Implementation:
+1.	Create the directories and folders as shown in the EOF.
+2.	Write Backend and then Frontend code and then nginx.conf file at the end
+
+Backend:
+1.	Install all the requirement using pip -> pip install --no-cache-dir –r requirements.txt 
+2.	main.py, requirements.txt and Dockerfile remains the same 
+3.	Build the image. In this case I used the name as shop-backend:v1.
+4.	Run a container and test the application from backend using the port 8000.
+
+Frontend:
+1.	app.js, index.html and Dockerfile remains the same.
+2.	Make sure that the nginx.conf file should match the Backend-service name that you give in kubernetes service name. Name should be the same. [http://backend-service:8000;]
+3.	Build the image. In this case I used the name as shop-frontend:v1.
+4.	Run a container and test the application from backend using the port 80
+
+Load Image to Kind – kind load docker-image <image-name:version> --name k8s-lab
+
+Kubernetes:
+1.	The flow should be   namespace  configmap  Secrets  pv  pvc  Database  redis  Backend  Frontend  Ingress
+2.	Inside Backend, the flow should be configmaps  secrets  pv  pvc Deployment  Services
+3.	Write all the yaml files and execute the below commands.
+Command - kubectl apply -f file.yaml
+4.	Make sure all the volumes, volumesClaims, Services, Endpoints, Pods, Deployments are running
+
+Validation:
+
+Postgess:
+1.	Login to Postgress pod and execute the below commands
+Cmd - kubectl exec -it postgres-77d794d89c-4f5w7 -n shopsphere – sh
+ 	psql  -U shopsphere -d shopsphere
+2.	Create Tables
+Cmd – 
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price NUMERIC(10,2) NOT NULL,
+    description TEXT
+);
+
+
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER NOT NULL
+        REFERENCES products(id),
+    quantity INTEGER NOT NULL,
+    status VARCHAR(30) NOT NULL,
+    created_at TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP
+);
+3.	Update the data
+Cmd:
+INSERT INTO products
+(name, price, description)
+VALUES
+('Laptop', 75000, 'High-performance developer laptop'),
+('Keyboard', 2500, 'Mechanical keyboard'),
+('Mouse', 1200, 'Wireless ergonomic mouse');
+4.	SELECT * FROM products;
+5.	Exit from psql - \q
+
+Backend:
+1.	Once Backend Deployment is completed, validate the backend pods
+Cmd - kubectl run curl-test -n shopsphere --image=curlimage/curl --rm  -it – sh
+2.	Once you login curl to the backend service and validate the backend-services
+cmd- curl http://backend-service:8000/health
+3.	curl http://backend-service:8000/api/products
+4.	Verify orders
+Cmd - curl -X POST \
+  http://backend-service:8000/api/orders \
+  -H "Content-Type: application/json" \
+  -d "{\"product_id\":1,\"quantity\":2}"
+5.	Then curl and verify orders – curl http://backend-service:8000/api/orders
+
+Redis:
+1.	Log in to redis pod and validate
+Cmd - kubectl exec -it <redis-pod> -n shopsphere –redis-cli
+2.	KEYS*. 
+
+
+Import Ingress:
+1.	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml
+2.	kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 80:80
+3.	check the pods in ingress-nginx namespace till they get ready state
+
+Port forward - kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 80:80
+
+
+Add the host file entry to access the application.
+As we don’t have cloud provider.
+
+Run port-forward in detached mode:
+
+Linux - kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 80:80 > /dev/null 2>&1 &^C
+
+Windows PS - Start-Job -ScriptBlock { kubectl port-forward service/ingress-nginx-controller -n ingress-nginx 80:80 }
+
+Stop port-forward:
+
+Linux - pkill -f "ingress-nginx-controller"
+Windows - Stop-Process -Name "kubectl" -Force
+
+
+ 
